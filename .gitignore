@@ -1,0 +1,12 @@
+node_modules/
+dist/
+test-results/
+playwright-report/
+.DS_Store
+android/.gradle/
+android/build/
+android/app/build/
+android/app/src/main/assets/www/
+release/*.apk
+/android-screen.png
+/perf-baseline.png

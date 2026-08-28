@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#80d7eb" />
+    <meta name="color-scheme" content="light" />
+    <title>Gio Jump</title>
+  </head>
+  <body>
+    <main id="game-shell" class="game-shell">
+      <canvas
+        id="game-canvas"
+        aria-label="Gio Jump game world"
+        tabindex="-1"
+      ></canvas>
+
+      <div id="hud" class="hud" aria-hidden="true">
+        <div class="hud__cluster">
+          <div class="hud__brand" aria-label="Gio Jump">
+            <span>Gio</span>
+            <strong>Jump</strong>
+          </div>
+          <div class="hud__stat" aria-label="Stars">
+            <i data-lucide="star" aria-hidden="true"></i>
+            <span id="star-count">0</span>
+            <span class="hud__divider">/</span>
+            <span id="star-total">0</span>
+          </div>
+          <div class="hud__stat" aria-label="Hearts">
+            <i data-lucide="heart" aria-hidden="true"></i>
+            <span id="heart-count">3</span>
+          </div>
+        </div>
+
+        <div class="hud__utilities">
+          <button
+            id="sound-button"
+            class="icon-button"
+            type="button"
+            aria-label="Mute sound"
+            aria-pressed="false"
+            title="Sound"
+          >
+            <i data-lucide="volume-2" aria-hidden="true"></i>
+          </button>
+          <button
+            id="fullscreen-button"
+            class="icon-button"
+            type="button"
+            aria-label="Enter fullscreen"
+            title="Fullscreen"
+          >
+            <i data-lucide="maximize" aria-hidden="true"></i>
+          </button>
+          <button
+            id="pause-button"
+            class="icon-button"
+            type="button"
+            aria-label="Pause game"
+            title="Pause"
+          >
+            <i data-lucide="pause" aria-hidden="true"></i>
+          </button>
+        </div>
+
+        <div class="progress-track" aria-hidden="true">
+          <div id="progress-fill" class="progress-track__fill"></div>
+          <div id="progress-gio" class="progress-track__gio"></div>
+          <i data-lucide="flag" class="progress-track__flag"></i>
+        </div>
+      </div>
+
+      <section id="start-screen" class="screen screen--start is-visible" aria-labelledby="game-title">
+        <div class="start-copy">
+          <p class="stage-kicker">Cloudberry Kingdom</p>
+          <h1 id="game-title"><span>Gio</span> Jump</h1>
+          <div class="stage-marker">
+            <i data-lucide="sun" aria-hidden="true"></i>
+            <span>Sunny Skies</span>
+            <strong>1</strong>
+          </div>
+          <button id="play-button" class="primary-action" type="button" data-menu-item>
+            <i data-lucide="play" fill="currentColor" aria-hidden="true"></i>
+            <span>Play</span>
+          </button>
+        </div>
+        <div class="remote-mark" aria-hidden="true">
+          <span class="remote-mark__key remote-mark__key--up"><i data-lucide="chevron-up"></i></span>
+          <span class="remote-mark__key remote-mark__key--left"><i data-lucide="chevron-left"></i></span>
+          <span class="remote-mark__key remote-mark__key--center"></span>
+          <span class="remote-mark__key remote-mark__key--right"><i data-lucide="chevron-right"></i></span>
+          <span class="remote-mark__key remote-mark__key--down"><i data-lucide="chevron-down"></i></span>
+        </div>
+      </section>
+
+      <section id="pause-screen" class="screen" aria-labelledby="pause-title">
+        <div class="menu-panel">
+          <p class="menu-panel__eyebrow">Sunny Skies</p>
+          <h2 id="pause-title">Paused</h2>
+          <div class="menu-actions">
+            <button id="resume-button" class="primary-action" type="button" data-menu-item>
+              <i data-lucide="play" fill="currentColor" aria-hidden="true"></i>
+              <span>Continue</span>
+            </button>
+            <button id="restart-button" class="secondary-action" type="button" data-menu-item>
+              <i data-lucide="rotate-ccw" aria-hidden="true"></i>
+              <span>Restart</span>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <section id="game-over-screen" class="screen" aria-labelledby="game-over-title">
+        <div class="menu-panel">
+          <p class="menu-panel__eyebrow">The clouds caught Gio</p>
+          <h2 id="game-over-title">Try again</h2>
+          <button id="try-again-button" class="primary-action" type="button" data-menu-item>
+            <i data-lucide="rotate-ccw" aria-hidden="true"></i>
+            <span>Restart</span>
+          </button>
+        </div>
+      </section>
+
+      <section id="win-screen" class="screen screen--win" aria-labelledby="win-title">
+        <div class="menu-panel">
+          <p class="menu-panel__eyebrow">Cloudberry Kingdom</p>
+          <h2 id="win-title">Star clear!</h2>
+          <div class="win-score" aria-label="Stars collected">
+            <i data-lucide="star" fill="currentColor" aria-hidden="true"></i>
+            <span id="win-stars">0 / 0</span>
+          </div>
+          <button id="play-again-button" class="primary-action" type="button" data-menu-item>
+            <i data-lucide="rotate-ccw" aria-hidden="true"></i>
+            <span>Play again</span>
+          </button>
+        </div>
+      </section>
+
+      <section id="error-screen" class="screen" aria-labelledby="error-title">
+        <div class="menu-panel">
+          <p class="menu-panel__eyebrow">Renderer unavailable</p>
+          <h2 id="error-title">WebGL needed</h2>
+        </div>
+      </section>
+
+      <div id="announcer" class="visually-hidden" aria-live="polite"></div>
+    </main>
+
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
