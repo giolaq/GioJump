@@ -11,6 +11,23 @@ const HAIR = "#2b171b";
 const BEARD = "#382024";
 const GLASSES = "#8b633d";
 
+const PLAYER_SKINS = Object.freeze({
+  classic: Object.freeze({
+    body: CORAL,
+    bodyDark: CORAL_DARK,
+    inner: "#ffadb0",
+    badge: LEMON,
+    shoes: CREAM,
+  }),
+  aurora: Object.freeze({
+    body: "#6574e8",
+    bodyDark: "#4948a9",
+    inner: "#9be9d1",
+    badge: "#9be9d1",
+    shoes: "#e8e5ff",
+  }),
+});
+
 function textureFromDrawing(draw, size = 192) {
   const canvas = document.createElement("canvas");
   canvas.width = size;
@@ -176,7 +193,7 @@ function drawGioFace(context, bob, squish, pose) {
   context.stroke();
 }
 
-function drawGio(context, size, pose) {
+function drawGio(context, size, pose, palette) {
   const bob = pose.bob ?? 0;
   const squish = pose.squish ?? 0;
   const bodyTop = 56 + bob + squish * 5;
@@ -187,17 +204,17 @@ function drawGio(context, size, pose) {
 
   context.strokeStyle = INK;
   context.lineWidth = 8;
-  context.fillStyle = CORAL;
+  context.fillStyle = palette.body;
   roundedPath(context, 45, 28 + bob, 35, 65, 18);
   context.fill();
   context.stroke();
   roundedPath(context, 112, 24 + bob, 35, 69, 18);
   context.fill();
   context.stroke();
-  ellipse(context, 62, 52 + bob, 7, 17, "#ffadb0");
-  ellipse(context, 129, 48 + bob, 7, 18, "#ffadb0");
+  ellipse(context, 62, 52 + bob, 7, 17, palette.inner);
+  ellipse(context, 129, 48 + bob, 7, 18, palette.inner);
 
-  context.fillStyle = CORAL;
+  context.fillStyle = palette.body;
   context.strokeStyle = INK;
   context.lineWidth = 9;
   roundedPath(context, 28, bodyTop, 136, bodyHeight, 58);
@@ -206,17 +223,27 @@ function drawGio(context, size, pose) {
 
   drawGioFace(context, bob, squish, pose);
 
-  drawSpark(context, 96, 145 + bob - squish * 2, 10, LEMON);
-  context.strokeStyle = CORAL_DARK;
+  drawSpark(context, 96, 145 + bob - squish * 2, 10, palette.badge);
+  context.strokeStyle = palette.bodyDark;
   context.lineWidth = 3;
   context.stroke();
 
-  ellipse(context, 64, 162 + bob - footLift, 24, 13, CREAM, INK, 7);
-  ellipse(context, 128, 162 + bob - (pose.otherFootLift ?? 0), 24, 13, CREAM, INK, 7);
+  ellipse(context, 64, 162 + bob - footLift, 24, 13, palette.shoes, INK, 7);
+  ellipse(
+    context,
+    128,
+    162 + bob - (pose.otherFootLift ?? 0),
+    24,
+    13,
+    palette.shoes,
+    INK,
+    7,
+  );
   context.restore();
 }
 
-export function createPlayerTextures() {
+export function createPlayerTextures(skin = "classic") {
+  const palette = PLAYER_SKINS[skin] ?? PLAYER_SKINS.classic;
   const poses = {
     idle: { bob: 0 },
     idleBlink: { bob: 1, blink: true },
@@ -230,7 +257,7 @@ export function createPlayerTextures() {
   return Object.fromEntries(
     Object.entries(poses).map(([name, pose]) => [
       name,
-      textureFromDrawing((context, size) => drawGio(context, size, pose)),
+      textureFromDrawing((context, size) => drawGio(context, size, pose, palette)),
     ]),
   );
 }

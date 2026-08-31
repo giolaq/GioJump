@@ -19,6 +19,13 @@ id = "/com.amazon.kepler.keplerscript_4@IKeplerScript_0"
 [[needs.module]]
 id = "/com.amazon.kepler.webview_4@IWebview_4"
 
+[[needs.module]]
+id = "/com.amazon.kepler.appstore.iap.purchase.core@IAppstoreIAPPurchaseCoreService"
+
+[[needs.module]]
+id = "/com.amazon.kepler.appstore_iap_lib_2@IAppstoreIapLib_12"
+
+
 
 
 [components]
@@ -34,6 +41,15 @@ id = "com.amazon.webview.renderer_service"
 
 [[wants.service]]
 id = "com.amazon.inputmethod.service"
+
+[[wants.service]]
+id = "com.amazon.network.service"
+
+[[wants.service]]
+id = "com.amazon.iap.core.service"
+
+[[wants.service]]
+id = "com.amazon.iap.tester.service"
 
 [[wants.service]]
 id = "com.amazon.media.server"
@@ -58,6 +74,12 @@ id = "com.amazon.kepler.ucc.publisher"
 
 [[wants.service]]
 id = "com.amazon.gipc.uuid.*"
+
+[[wants.module]]
+id = "/com.amazon.iap.core@IIAPCoreUI"
+
+[[wants.module]]
+id = "/com.amazonappstore.iap.tester@IIAPTesterUI"
 
 [offers]
 [[offers.service]]

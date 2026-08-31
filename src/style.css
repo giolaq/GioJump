@@ -28,6 +28,10 @@
   box-sizing: border-box;
 }
 
+[hidden] {
+  display: none !important;
+}
+
 html,
 body,
 #game-shell {
@@ -330,6 +334,12 @@ button {
   color: var(--cloud-white);
 }
 
+.start-actions {
+  display: grid;
+  width: min(500px, 58vw);
+  gap: 18px;
+}
+
 .primary-action,
 .secondary-action {
   display: inline-flex;
@@ -377,6 +387,47 @@ button {
 .secondary-action:focus-visible {
   background: #765887;
   transform: translateY(-4px);
+}
+
+.skin-action {
+  min-height: 68px;
+  justify-content: flex-start;
+  padding: 0 24px;
+  font-size: clamp(18px, 1.5vw, 24px);
+}
+
+.skin-action:disabled {
+  cursor: default;
+  opacity: 0.88;
+}
+
+.skin-action:disabled:hover {
+  background: var(--plum-soft);
+  transform: none;
+}
+
+.skin-action svg {
+  margin-left: auto;
+  color: #9be9d1;
+}
+
+.skin-action__swatch {
+  width: 38px;
+  height: 38px;
+  flex: 0 0 auto;
+  border: 3px solid var(--cloud-white);
+  border-radius: 14px;
+  background: linear-gradient(135deg, #6574e8 0 55%, #9be9d1 55% 100%);
+  box-shadow: 0 0 0 3px rgba(62, 41, 79, 0.2);
+}
+
+.skin-status {
+  min-height: 22px;
+  margin: -6px 4px 0;
+  color: var(--cloud-milk);
+  font-size: 16px;
+  font-weight: 800;
+  text-shadow: 0 2px 0 rgba(62, 41, 79, 0.28);
 }
 
 .remote-mark {
@@ -548,6 +599,14 @@ button {
     min-height: 64px;
   }
 
+  .start-actions {
+    gap: 12px;
+  }
+
+  .skin-action {
+    min-height: 58px;
+  }
+
   .remote-mark {
     right: var(--safe-x);
     bottom: calc(var(--safe-y) + 2vh);
@@ -597,9 +656,13 @@ button {
   }
 
   .stage-marker,
-  .start-copy .primary-action {
+  .start-actions {
     margin-right: auto;
     margin-left: auto;
+  }
+
+  .start-actions {
+    width: min(360px, 92vw);
   }
 
   .remote-mark {

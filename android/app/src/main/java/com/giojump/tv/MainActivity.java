@@ -31,6 +31,7 @@ public class MainActivity extends Activity {
     private static final Map<String, String> MIME_TYPES = createMimeTypes();
 
     private WebView webView;
+    private OpenIapWebBridge iapBridge;
 
     @SuppressLint("SetJavaScriptEnabled")
     @Override
@@ -60,7 +61,7 @@ public class MainActivity extends Activity {
         settings.setBuiltInZoomControls(false);
         settings.setDisplayZoomControls(false);
         settings.setCacheMode(WebSettings.LOAD_DEFAULT);
-        settings.setUserAgentString(settings.getUserAgentString() + " GioJumpFireTV/1.0");
+        settings.setUserAgentString(settings.getUserAgentString() + " GioJumpTV/1.0");
 
         if ((getApplicationInfo().flags & ApplicationInfo.FLAG_DEBUGGABLE) != 0) {
             WebView.setWebContentsDebuggingEnabled(true);
@@ -68,6 +69,8 @@ public class MainActivity extends Activity {
 
         webView.setWebChromeClient(new WebChromeClient());
         webView.setWebViewClient(new LocalAssetClient());
+        iapBridge = new OpenIapWebBridge(this, webView);
+        webView.addJavascriptInterface(iapBridge, "GioJumpIAP");
         setContentView(webView);
         webView.loadUrl(APP_URL);
     }
@@ -113,6 +116,9 @@ public class MainActivity extends Activity {
             webView.onResume();
             webView.requestFocus();
         }
+        if (iapBridge != null) {
+            iapBridge.setActivity(this);
+        }
         enterImmersiveMode();
     }
 
@@ -129,7 +135,12 @@ public class MainActivity extends Activity {
 
     @Override
     protected void onDestroy() {
+        if (iapBridge != null) {
+            iapBridge.destroy();
+            iapBridge = null;
+        }
         if (webView != null) {
+            webView.removeJavascriptInterface("GioJumpIAP");
             webView.loadUrl("about:blank");
             webView.stopLoading();
             webView.destroy();
@@ -230,6 +241,17 @@ public class MainActivity extends Activity {
     }
 
     private final class LocalAssetClient extends WebViewClient {
+        @Override
+        @SuppressWarnings("deprecation")
+        public boolean shouldOverrideUrlLoading(WebView view, String url) {
+            return !APP_HOST.equals(Uri.parse(url).getHost());
+        }
+
+        @Override
+        public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
+            return !APP_HOST.equals(request.getUrl().getHost());
+        }
+
         @Override
         public WebResourceResponse shouldInterceptRequest(
                 WebView view,

@@ -11,17 +11,39 @@ import {
   usePreventHideSplashScreen,
 } from '@amazon-devices/react-native-kepler';
 import * as React from 'react';
-import {useRef} from 'react';
+import {useEffect, useRef} from 'react';
 import {BackHandler, StyleSheet, View} from 'react-native';
+import type {WebViewMethods} from '@amazon-devices/webview/dist/types/WebViewTypes';
+import {VegaOpenIapBridge} from './iapBridge';
 
 const GAME_URL = 'file:///pkg/assets/game/index.html';
 const NATIVE_EXIT_MESSAGE = 'giojump:exit';
-const VEGA_BOOTSTRAP = `window.__GIO_JUMP_PLATFORM__ = 'vega'; true;`;
+const VEGA_BOOTSTRAP = `window.__GIO_JUMP_PLATFORM__ = 'vega'; window.__GIO_JUMP_IAP_ENABLED__ = true; true;`;
 
 export const App = () => {
-  const webRef = useRef(null);
+  const webRef = useRef<WebViewMethods>(null);
+  const iapBridgeRef = useRef<VegaOpenIapBridge>(null);
   usePreventHideSplashScreen();
   const hideSplashScreen = useHideSplashScreenCallback();
+
+  const sendToGame = (payload: Record<string, unknown>) => {
+    const serialized = JSON.stringify(JSON.stringify(payload));
+    webRef.current?.injectJavaScript(
+      `window.__GIO_JUMP_IAP_RECEIVE&&window.__GIO_JUMP_IAP_RECEIVE(${serialized});true;`,
+    );
+  };
+
+  const iapBridge = () => {
+    if (!iapBridgeRef.current) {
+      iapBridgeRef.current = new VegaOpenIapBridge(sendToGame);
+    }
+    return iapBridgeRef.current;
+  };
+
+  useEffect(() => () => {
+    iapBridgeRef.current?.dispose();
+    iapBridgeRef.current = null;
+  }, []);
 
   return (
     <View style={styles.container}>
@@ -41,8 +63,11 @@ export const App = () => {
           hideSplashScreen();
         }}
         onMessage={(event: WebViewMessageEvent) => {
-          if (event.nativeEvent.data === NATIVE_EXIT_MESSAGE) {
+          const message = event.nativeEvent.data;
+          if (message === NATIVE_EXIT_MESSAGE) {
             BackHandler.exitApp();
+          } else {
+            iapBridge().handle(message);
           }
         }}
         onError={({

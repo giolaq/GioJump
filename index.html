@@ -80,10 +80,25 @@
             <span>Sunny Skies</span>
             <strong>1</strong>
           </div>
-          <button id="play-button" class="primary-action" type="button" data-menu-item>
-            <i data-lucide="play" fill="currentColor" aria-hidden="true"></i>
-            <span>Play</span>
-          </button>
+          <div class="start-actions">
+            <button id="play-button" class="primary-action" type="button" data-menu-item>
+              <i data-lucide="play" fill="currentColor" aria-hidden="true"></i>
+              <span>Play</span>
+            </button>
+            <button
+              id="skin-button"
+              class="secondary-action skin-action"
+              type="button"
+              aria-describedby="skin-status"
+              data-menu-item
+              hidden
+            >
+              <span class="skin-action__swatch" aria-hidden="true"></span>
+              <span id="skin-button-label">Checking Aurora Skin…</span>
+              <i data-lucide="sparkles" aria-hidden="true"></i>
+            </button>
+            <p id="skin-status" class="skin-status" aria-live="polite"></p>
+          </div>
         </div>
         <div class="remote-mark" aria-hidden="true">
           <span class="remote-mark__key remote-mark__key--up"><i data-lucide="chevron-up"></i></span>

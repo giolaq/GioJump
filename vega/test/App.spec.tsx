@@ -13,6 +13,17 @@ jest.mock('@amazon-devices/react-native-kepler', () => ({
   View: 'View',
 }));
 
+jest.mock('react-native-iap', () => ({
+  endConnection: jest.fn(async () => true),
+  fetchProducts: jest.fn(async () => []),
+  finishTransaction: jest.fn(async () => undefined),
+  getAvailablePurchases: jest.fn(async () => []),
+  initConnection: jest.fn(async () => true),
+  purchaseErrorListener: jest.fn(() => ({remove: jest.fn()})),
+  purchaseUpdatedListener: jest.fn(() => ({remove: jest.fn()})),
+  requestPurchase: jest.fn(async () => null),
+}));
+
 describe('App', () => {
   it('renders the bundled game WebView', () => {
     const {toJSON} = render(<App />);

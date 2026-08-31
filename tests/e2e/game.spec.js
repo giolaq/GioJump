@@ -180,6 +180,78 @@ test.describe("Gio Jump television flow", () => {
     await expect(page.locator("#pause-screen")).toBeVisible();
   });
 
+  test("buys and equips the Aurora Skin through the OpenIAP bridge", async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 720 });
+    await page.addInitScript(() => {
+      const productId = "com.giolaq.giojump.skin.aurora";
+      window.__iapRequests = [];
+      window.GioJumpIAP = {
+        postMessage(rawMessage) {
+          const request = JSON.parse(rawMessage);
+          window.__iapRequests.push(request);
+          setTimeout(() => {
+            const results = {
+              initConnection: true,
+              fetchProducts: [{
+                id: productId,
+                displayPrice: "£1.99",
+                title: "Aurora Skin",
+                type: "in-app",
+              }],
+              getAvailablePurchases: [],
+              requestPurchase: { dispatched: true },
+              finishTransaction: true,
+            };
+            window.__GIO_JUMP_IAP_RECEIVE(JSON.stringify({
+              channel: "giojump:iap",
+              id: request.id,
+              result: results[request.method],
+            }));
+            if (request.method === "requestPurchase") {
+              window.__GIO_JUMP_IAP_RECEIVE(JSON.stringify({
+                channel: "giojump:iap",
+                event: "purchaseUpdated",
+                purchase: {
+                  id: "tv-transaction-1",
+                  productId,
+                  purchaseState: "purchased",
+                  purchaseToken: "tv-purchase-token-1",
+                },
+              }));
+            }
+          }, 0);
+        },
+      };
+    });
+    await page.goto("/");
+
+    await expect(page.locator("#skin-button")).toBeVisible();
+    await expect(page.locator("#skin-button")).toBeInViewport();
+    await expect(page.locator("#skin-button-label")).toHaveText(
+      "Buy Aurora Skin · £1.99",
+    );
+    await page.keyboard.press("ArrowDown");
+    await expect(page.locator("#skin-button")).toBeFocused();
+    await page.keyboard.press("Enter");
+
+    await expect(page.locator("#skin-button-label")).toHaveText(
+      "Aurora Skin equipped",
+    );
+    await expect.poll(
+      () => page.evaluate(() => window.__GIO_JUMP__.state.player.skin),
+    ).toBe("aurora");
+    const methods = await page.evaluate(() =>
+      window.__iapRequests.map((request) => request.method),
+    );
+    expect(methods).toEqual(expect.arrayContaining([
+      "initConnection",
+      "fetchProducts",
+      "getAvailablePurchases",
+      "requestPurchase",
+      "finishTransaction",
+    ]));
+  });
+
   test("can clear the course using only the directional cross", async ({ page }, testInfo) => {
     test.setTimeout(55_000);
     await page.setViewportSize({ width: 1280, height: 720 });
@@ -190,13 +262,10 @@ test.describe("Gio Jump television flow", () => {
     const deadline = Date.now() + 44_000;
     let finalState = await page.evaluate(() => window.__GIO_JUMP__.state);
     while (Date.now() < deadline && finalState.state === "playing") {
-      if (finalState.player.onGround) {
-        await page.keyboard.down("ArrowUp");
-        await page.waitForTimeout(310);
-        await page.keyboard.up("ArrowUp");
-      } else {
-        await page.waitForTimeout(70);
-      }
+      await page.keyboard.down("ArrowUp");
+      await page.waitForTimeout(350);
+      await page.keyboard.up("ArrowUp");
+      await page.waitForTimeout(35);
       finalState = await page.evaluate(() => window.__GIO_JUMP__.state);
     }
     await page.keyboard.up("ArrowRight");

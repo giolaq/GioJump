@@ -11,6 +11,8 @@ stars, activate checkpoints, avoid enemies, and reach the finish flag.
 - Play a complete platforming course with 18 collectibles and two checkpoints.
 - Use keyboard, gamepad, or Fire TV remote controls.
 - Run the same game in a browser, an Android WebView, or a Vega WebView.
+- Buy and restore the non-consumable Aurora Skin through OpenIAP on Android TV,
+  Fire OS, and Vega.
 - Scale rendering automatically for lower-power Android, Fire TV, and Vega devices.
 - Preserve responsive layouts across television, desktop, and mobile screens.
 - Generate music and sound effects with the Web Audio API.
@@ -32,7 +34,7 @@ To build the Android app, also install:
 | Tool | Requirement |
 | --- | --- |
 | JDK | 17 |
-| Android SDK | API level 35 |
+| Android SDK | API level 36 |
 | ADB | Required to deploy to a Fire TV device |
 
 The repository includes the Gradle wrapper. You don't need to install Gradle
@@ -91,20 +93,20 @@ hardware-accelerated `WebView`.
 
 1. Set `ANDROID_HOME` to your Android SDK directory.
 
-2. Build the debug APK:
+2. Build the Google Play debug APK for Android TV:
 
    ```bash
-   npm run android:apk
+   npm run android:apk:play
    ```
 
 3. Find the APK at:
 
    ```text
-   android/app/build/outputs/apk/debug/app-debug.apk
+   android/app/build/outputs/apk/play/debug/app-play-debug.apk
    ```
 
-The build command first runs Vite, copies `dist/` into the Android assets
-directory, and then runs `assembleDebug`.
+The default `npm run android:apk` command is an alias for the Play variant. Both
+Android variants first run Vite and copy `dist/` into the Android assets.
 
 ## Deploy to Fire TV
 
@@ -116,11 +118,12 @@ directory, and then runs `assembleDebug`.
    adb devices
    ```
 
-3. Install the debug APK:
+3. Build and install the Amazon Appstore variant:
 
    ```bash
+   npm run android:apk:amazon
    adb -s <device-serial> install -r \
-     android/app/build/outputs/apk/debug/app-debug.apk
+     android/app/build/outputs/apk/amazon/debug/app-amazon-debug.apk
    ```
 
 4. Launch Gio Jump:
@@ -200,6 +203,13 @@ before sideloading. A physical-device pass is required before Appstore
 submission because current Vega Fire TV hardware has substantially less memory
 than a desktop virtual device.
 
+## Configure the Aurora Skin purchase
+
+Create the same non-consumable product ID in Google Play and both Amazon app
+catalogs before testing a real purchase. The exact catalog fields, store testing
+requirements, APK variants, entitlement behavior, and server-verification option
+are documented in [docs/iap-setup.md](docs/iap-setup.md).
+
 ## Test the game
 
 Run the unit tests:
@@ -229,9 +239,11 @@ completion.
 | `src/input.js` | Keyboard, remote, and gamepad input mapping |
 | `src/audio.js` | Web Audio music and sound effects |
 | `src/textures.js` | Procedurally generated character textures |
+| `src/purchases.js` | Shared OpenIAP lifecycle and Aurora entitlement state |
 | `src/main.js` | UI state and game integration |
-| `android/` | Native Android and Fire TV wrapper |
-| `vega/` | React Native for Vega WebView wrapper and manifest |
+| `android/` | Google Play and Amazon OpenIAP WebView wrappers |
+| `vega/` | React Native for Vega WebView and OpenIAP wrapper |
+| `docs/iap-setup.md` | Store catalog and purchase testing setup |
 | `docs/vega-research.md` | Vega architecture, API, and device research |
 | `tests/unit/` | Unit tests for input and level helpers |
 | `tests/e2e/` | Playwright gameplay and visual smoke tests |

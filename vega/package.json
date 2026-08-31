@@ -12,10 +12,13 @@
     "release": "npm-run-all lint test build:release"
   },
   "dependencies": {
+    "@amazon-devices/keplerscript-appstore-iap-lib": "~2.13.0",
     "@amazon-devices/react-native-kepler": "~4.0.0+rn0.83.0",
     "@amazon-devices/webview": "~4.0",
     "react": "19.2.0",
-    "react-native": "0.83.0"
+    "react-native": "0.83.0",
+    "react-native-iap": "16.5.0",
+    "react-native-nitro-modules": "^0.36.5"
   },
   "engines": {
     "node": ">=20"

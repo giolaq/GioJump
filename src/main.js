@@ -11,6 +11,7 @@ import {
   Pause,
   Play,
   RotateCcw,
+  Sparkles,
   Star,
   Sun,
   Volume2,
@@ -20,6 +21,7 @@ import "./style.css";
 import { AudioManager } from "./audio.js";
 import { GioJumpGame } from "./game.js";
 import { ACTIONS, actionFromKeyboardEvent, isDirectionalAction } from "./input.js";
+import { createSkinPurchase } from "./purchases.js";
 
 const iconSet = {
   ChevronDown,
@@ -33,6 +35,7 @@ const iconSet = {
   Pause,
   Play,
   RotateCcw,
+  Sparkles,
   Star,
   Sun,
   Volume2,
@@ -63,6 +66,9 @@ const elements = {
   fullscreenButton: document.querySelector("#fullscreen-button"),
   pauseButton: document.querySelector("#pause-button"),
   playButton: document.querySelector("#play-button"),
+  skinButton: document.querySelector("#skin-button"),
+  skinButtonLabel: document.querySelector("#skin-button-label"),
+  skinStatus: document.querySelector("#skin-status"),
   resumeButton: document.querySelector("#resume-button"),
   restartButton: document.querySelector("#restart-button"),
   tryAgainButton: document.querySelector("#try-again-button"),
@@ -95,6 +101,7 @@ const NATIVE_EXIT_MESSAGE = "giojump:exit";
 let activeScreen = "start";
 let muted = false;
 let game;
+let skinPurchase;
 let displayedProgress = -1;
 
 function focusFirstMenuItem() {
@@ -175,6 +182,36 @@ function updateFullscreenButton() {
   );
 }
 
+function updateSkinPurchase(state) {
+  if (!skinPurchase?.supported) return;
+  elements.skinButton.hidden = false;
+  const price = state.product?.displayPrice;
+
+  if (state.phase === "owned") {
+    elements.skinButtonLabel.textContent = "Aurora Skin equipped";
+    elements.skinButton.disabled = true;
+    if (document.activeElement === elements.skinButton) {
+      elements.playButton.focus({ preventScroll: true });
+    }
+  } else if (state.phase === "purchasing") {
+    elements.skinButtonLabel.textContent = "Waiting for the store…";
+    elements.skinButton.disabled = true;
+  } else if (state.phase === "loading") {
+    elements.skinButtonLabel.textContent = "Checking Aurora Skin…";
+    elements.skinButton.disabled = true;
+  } else if (state.phase === "error" && !state.product) {
+    elements.skinButtonLabel.textContent = "Retry Aurora Skin store";
+    elements.skinButton.disabled = false;
+  } else {
+    elements.skinButtonLabel.textContent = price
+      ? `Buy Aurora Skin · ${price}`
+      : "Buy Aurora Skin";
+    elements.skinButton.disabled = false;
+  }
+
+  elements.skinStatus.textContent = state.message;
+}
+
 function handleGameState(state) {
   if (state === "won") {
     const snapshot = game.snapshot();
@@ -227,6 +264,13 @@ async function startGame() {
 ].forEach((button) => button.addEventListener("click", startGame));
 elements.resumeButton.addEventListener("click", () => game.resume());
 elements.pauseButton.addEventListener("click", () => game.pause());
+elements.skinButton.addEventListener("click", () => {
+  if (skinPurchase.state.phase === "error" && !skinPurchase.state.product) {
+    void skinPurchase.initialize();
+  } else {
+    void skinPurchase.purchase();
+  }
+});
 
 elements.soundButton.addEventListener("click", async () => {
   await audio.enable();
@@ -281,6 +325,17 @@ window.addEventListener("blur", () => {
   game?.input.reset();
 });
 
+skinPurchase = createSkinPurchase({
+  onState: updateSkinPurchase,
+  onEntitlement() {
+    game?.setPlayerSkin("aurora");
+  },
+});
+if (skinPurchase.supported) {
+  elements.skinButton.hidden = false;
+  void skinPurchase.initialize();
+}
+
 window.__GIO_JUMP__ = {
   get state() {
     return game?.snapshot() ?? null;
@@ -288,6 +343,9 @@ window.__GIO_JUMP__ = {
   start: startGame,
   pause: () => game?.pause(),
   resume: () => game?.resume(),
+  get purchase() {
+    return skinPurchase?.state ?? null;
+  },
   nativeBack() {
     if (game?.state === "playing") {
       game.pause();

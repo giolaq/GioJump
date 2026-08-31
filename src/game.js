@@ -166,7 +166,8 @@ export class GioJumpGame {
     this.performanceAverage = FIXED_STEP;
     this.performanceSamples = 0;
     this.performanceCooldown = 0;
-    this.playerTextures = createPlayerTextures();
+    this.playerSkin = "classic";
+    this.playerTextures = createPlayerTextures(this.playerSkin);
     this.enemyTextures = createEnemyTextures();
     this.checkpointTextures = {
       inactive: createCheckpointTexture(false),
@@ -567,6 +568,18 @@ export class GioJumpGame {
     this.playerShadow.rotation.x = -Math.PI / 2;
     this.playerShadow.position.z = 1.4;
     this.world.add(this.playerShadow);
+  }
+
+  setPlayerSkin(skin) {
+    if (!new Set(["classic", "aurora"]).has(skin)) return false;
+    if (skin === this.playerSkin) return true;
+
+    const previousTextures = this.playerTextures;
+    this.playerTextures = createPlayerTextures(skin);
+    this.playerSkin = skin;
+    this.updatePlayerAnimation();
+    Object.values(previousTextures).forEach((texture) => texture.dispose());
+    return true;
   }
 
   buildParticlePool() {
@@ -1266,6 +1279,7 @@ export class GioJumpGame {
         vx: Number(this.player.vx.toFixed(3)),
         vy: Number(this.player.vy.toFixed(3)),
         onGround: this.player.onGround,
+        skin: this.playerSkin,
       },
       stars: this.collectedStars,
       totalStars: COLLECTIBLES.length,
