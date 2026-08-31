@@ -26,14 +26,19 @@ platform implementation sources.
 3. Add the signed app to an internal test track and add the purchasing Google
    accounts as license testers. Google Play product lookup does not work for an
    arbitrary sideload whose signing identity or package does not match Play.
-4. Build the Play variant:
+4. Compile-check the Play adapter with the debug variant:
 
    ```bash
    npm run android:apk:play
    ```
 
    The debug APK is written to
-   `android/app/build/outputs/apk/play/debug/app-play-debug.apk`.
+   `android/app/build/outputs/apk/play/debug/app-play-debug.apk`. Its application
+   ID is `com.giojump.tv.debug`, so it does not match the production catalog.
+5. For a real purchase test, configure release signing, run
+   `npm run android:sync`, build `bundlePlayRelease`, upload the resulting app
+   bundle to the internal track, and install it through Google Play. That build
+   uses the catalog application ID `com.giojump.tv`.
 
 ## Amazon Appstore for Fire OS
 
@@ -43,14 +48,19 @@ platform implementation sources.
    available for the app's supported marketplaces.
 3. Configure Amazon App Tester or Live App Testing for the test account and
    device. Product metadata must use the exact SKU above.
-4. Build the Amazon variant:
+4. Compile-check the Amazon adapter with the debug variant:
 
    ```bash
    npm run android:apk:amazon
    ```
 
    The debug APK is written to
-   `android/app/build/outputs/apk/amazon/debug/app-amazon-debug.apk`.
+   `android/app/build/outputs/apk/amazon/debug/app-amazon-debug.apk`. Its
+   application ID is `com.giojump.tv.debug`.
+5. For Live App Testing, configure release signing and build
+   `assembleAmazonRelease` after `npm run android:sync`. Upload the signed APK
+   whose application ID is `com.giojump.tv`. If you test the debug APK through
+   App Tester instead, its test catalog must target `com.giojump.tv.debug`.
 
 ## Amazon Appstore for Vega
 

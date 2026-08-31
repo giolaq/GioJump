@@ -210,6 +210,10 @@ catalogs before testing a real purchase. The exact catalog fields, store testing
 requirements, APK variants, entitlement behavior, and server-verification option
 are documented in [docs/iap-setup.md](docs/iap-setup.md).
 
+For the code path from the shared web game through the Android and Vega store
+adapters, follow the step-by-step
+[OpenIAP implementation guide](docs/openiap-implementation-guide.md).
+
 ## Test the game
 
 Run the unit tests:
@@ -244,6 +248,7 @@ completion.
 | `android/` | Google Play and Amazon OpenIAP WebView wrappers |
 | `vega/` | React Native for Vega WebView and OpenIAP wrapper |
 | `docs/iap-setup.md` | Store catalog and purchase testing setup |
+| `docs/openiap-implementation-guide.md` | Step-by-step OpenIAP implementation guide |
 | `docs/vega-research.md` | Vega architecture, API, and device research |
 | `tests/unit/` | Unit tests for input and level helpers |
 | `tests/e2e/` | Playwright gameplay and visual smoke tests |
