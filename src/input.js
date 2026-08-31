@@ -22,11 +22,13 @@ const KEY_ACTIONS = new Map([
   ["Spacebar", ACTIONS.CONFIRM],
   ["Escape", ACTIONS.BACK],
   ["BrowserBack", ACTIONS.BACK],
+  ["GoBack", ACTIONS.BACK],
   ["MediaPlayPause", ACTIONS.PAUSE],
 ]);
 
 const KEYCODE_ACTIONS = new Map([
   [13, ACTIONS.CONFIRM],
+  [27, ACTIONS.BACK],
   [32, ACTIONS.CONFIRM],
   [37, ACTIONS.LEFT],
   [38, ACTIONS.UP],

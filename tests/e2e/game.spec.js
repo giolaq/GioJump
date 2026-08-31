@@ -143,6 +143,43 @@ test.describe("Gio Jump television flow", () => {
     });
   });
 
+  test("handles Vega WebView quality and remote back events", async ({ page }) => {
+    await page.addInitScript(() => {
+      window.__GIO_JUMP_PLATFORM__ = "vega";
+      window.__nativeMessages = [];
+      window.ReactNativeWebView = {
+        postMessage(message) {
+          window.__nativeMessages.push(message);
+        },
+      };
+    });
+    await page.goto("/");
+    await page.waitForFunction(() => window.__GIO_JUMP__.state?.renderer.triangles > 100);
+
+    const renderer = await page.evaluate(() => window.__GIO_JUMP__.state.renderer);
+    expect(renderer.quality).toBe("balanced");
+    expect(renderer.shadows).toBe(false);
+
+    await page.evaluate(() => {
+      window.dispatchEvent(new KeyboardEvent("keydown", {
+        key: "GoBack",
+        keyCode: 27,
+        bubbles: true,
+      }));
+    });
+    expect(await page.evaluate(() => window.__nativeMessages)).toEqual(["giojump:exit"]);
+
+    await page.keyboard.press("Enter");
+    await page.evaluate(() => {
+      window.dispatchEvent(new KeyboardEvent("keydown", {
+        key: "GoBack",
+        keyCode: 27,
+        bubbles: true,
+      }));
+    });
+    await expect(page.locator("#pause-screen")).toBeVisible();
+  });
+
   test("can clear the course using only the directional cross", async ({ page }, testInfo) => {
     test.setTimeout(55_000);
     await page.setViewportSize({ width: 1280, height: 720 });

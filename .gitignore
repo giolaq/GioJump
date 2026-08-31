@@ -7,6 +7,12 @@ android/.gradle/
 android/build/
 android/app/build/
 android/app/src/main/assets/www/
+vega/node_modules/
+vega/build/
+vega/buildinfo.json
+vega/dist/
+vega/assets/game/
 release/*.apk
+release/*.vpkg
 /android-screen.png
 /perf-baseline.png

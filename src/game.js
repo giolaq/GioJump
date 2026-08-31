@@ -96,6 +96,7 @@ function createRendererProfile() {
   const forcedQuality = new URLSearchParams(window.location.search).get("quality");
   const userAgent = navigator.userAgent;
   const lowPowerDevice =
+    window.__GIO_JUMP_PLATFORM__ === "vega" ||
     /Android|GioJumpFireTV/i.test(userAgent) ||
     (navigator.deviceMemory && navigator.deviceMemory <= 4) ||
     (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4);

@@ -12,6 +12,7 @@ test("maps television remote key codes to directional actions", () => {
   assert.equal(actionFromKeyboardEvent({ key: "", keyCode: 39 }), ACTIONS.RIGHT);
   assert.equal(actionFromKeyboardEvent({ key: "", keyCode: 40 }), ACTIONS.DOWN);
   assert.equal(actionFromKeyboardEvent({ key: "", keyCode: 13 }), ACTIONS.CONFIRM);
+  assert.equal(actionFromKeyboardEvent({ key: "GoBack", keyCode: 27 }), ACTIONS.BACK);
   assert.equal(actionFromKeyboardEvent({ key: "", keyCode: 461 }), ACTIONS.BACK);
   assert.equal(actionFromKeyboardEvent({ key: "", keyCode: 10009 }), ACTIONS.BACK);
 });

@@ -91,6 +91,7 @@ const MENU_STEPS = new Map([
   [ACTIONS.RIGHT, 1],
 ]);
 const PAUSE_ACTIONS = new Set([ACTIONS.BACK, ACTIONS.PAUSE]);
+const NATIVE_EXIT_MESSAGE = "giojump:exit";
 let activeScreen = "start";
 let muted = false;
 let game;
@@ -138,6 +139,13 @@ function handleMenuAction(action) {
   } else if (action === ACTIONS.CONFIRM) {
     items[currentIndex].click();
   }
+}
+
+function requestNativeExit() {
+  const bridge = window.ReactNativeWebView;
+  if (typeof bridge?.postMessage !== "function") return false;
+  bridge.postMessage(NATIVE_EXIT_MESSAGE);
+  return true;
 }
 
 function setIconButton(button, icon, label, pressed) {
@@ -240,7 +248,12 @@ window.addEventListener("keydown", (event) => {
 
   event.preventDefault();
   if (activeScreen) {
-    if (!event.repeat) handleMenuAction(action);
+    if (!event.repeat) {
+      if (action === ACTIONS.BACK && activeScreen !== "paused" && requestNativeExit()) {
+        return;
+      }
+      handleMenuAction(action);
+    }
     return;
   }
 

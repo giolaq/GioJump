@@ -10,7 +10,13 @@
     "test": "node --test tests/unit/*.test.js",
     "test:e2e": "playwright test",
     "android:sync": "npm run build && node scripts/sync-android.mjs",
-    "android:apk": "npm run android:sync && cd android && ./gradlew assembleDebug"
+    "android:apk": "npm run android:sync && cd android && ./gradlew assembleDebug",
+    "vega:install": "npm --prefix vega ci",
+    "vega:sync": "npm run build && node scripts/sync-vega.mjs",
+    "vega:doctor": "cd vega && node ../scripts/vega-cli.mjs project doctor",
+    "vega:build": "npm run vega:sync && npm --prefix vega run build:release",
+    "vega:build:debug": "npm run vega:sync && npm --prefix vega run build:debug",
+    "vega:run": "node scripts/run-vega.mjs"
   },
   "dependencies": {
     "lucide": "^0.468.0",
